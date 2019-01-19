@@ -11,6 +11,9 @@
 __version__ = '0.2.1'
 
 import math
+import io
+import argparse
+from urllib.request import urlopen
 
 from PIL import Image
 
@@ -420,3 +423,42 @@ class PQueue(object):
 
     def map(self, f):
         return list(map(f, self.contents))
+
+
+def print_fancy(rgb):
+    """Code from https://stackoverflow.com/a/45782972/54056
+    """
+    RESET = '\033[0m'
+
+    def get_color_escape(r, g, b, background=False):
+        return '\033[{};2;{};{};{}m'.format(48 if background else 38, r, g, b)
+    
+    print(get_color_escape(255, 255, 255)  # white text
+      + get_color_escape(*rgb, background=True)  # solid color background
+      + str(rgb).ljust(50)
+      + RESET)
+
+
+def analyse_image(filepath=None, fileurl=None, do_print_fancy=False):
+    if filepath:
+        f = filepath
+    elif fileurl:
+        fd = urlopen(fileurl)
+        f = io.BytesIO(fd.read())
+    else:
+        raise ValueError('One of filepath and fileurl must be not None')
+    printt = print_fancy if do_print_fancy else print
+
+    color_thief = ColorThief(f)
+    palette = color_thief.get_palette(quality=1, color_count=5)
+    for color in palette:
+        printt(color)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("filepath", help="Path to an image file")
+    parser.add_argument("--fancy", action="store_true",
+                    help="print fancy output")
+    args = parser.parse_args()
+    analyse_image(args.filepath, do_print_fancy=args.fancy)
