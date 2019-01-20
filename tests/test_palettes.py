@@ -2,6 +2,7 @@ import pytest
 from colorthief import ColorThief
 
 
+@pytest.mark.sunsetimage
 def test_get_palette_sunset_quality_10_count_5():
     imgpath = 'images/sunset.jpg'
     color_thief = ColorThief(imgpath)
@@ -28,10 +29,8 @@ def test_get_palette_sunset_quality_10_count_4():
     assert palette == expected
 
 
-def test_get_palette_sunset_quality_10_count_3():
-    imgpath = 'images/sunset.jpg'
-    color_thief = ColorThief(imgpath)
-    palette = color_thief.get_palette(quality=10, color_count=3)
+def test_get_palette_sunset_quality_10_count_3(sunset):
+    palette = sunset.get_palette(quality=10, color_count=3)
     expected = [
         (164, 144, 178),
         (9, 6, 5),
@@ -40,7 +39,7 @@ def test_get_palette_sunset_quality_10_count_3():
     assert palette == expected
 
 
-def test_get_palette_sunset_quality_10_count_2():
+def test_get_palette_sunset_quality_10_count_2(sunset):
     imgpath = 'images/sunset.jpg'
     color_thief = ColorThief(imgpath)
     palette = color_thief.get_palette(quality=10, color_count=2)
@@ -69,6 +68,7 @@ def test_get_palette_count_10():
     assert len(palette) == 10
 
 
+@pytest.mark.sunsetimage
 @pytest.mark.parametrize(('quality', 'expected_count'), [
     (1, 5),
     (2, 5),
